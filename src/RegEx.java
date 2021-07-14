@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Regex validates user input against the following conditions:
  * A. Social Security Number
  * B. US Phone number
  * C. E-mail address
@@ -24,15 +25,17 @@ import java.util.regex.Pattern;
  *              and does not have more than 3 consecutive lower case characters
  * L. All words containing an odd number of alphabetic characters, ending in "ion"
  * Q. quit
+ * Returns true if input is validated against selected regular expression, and false otherwise.
+ *
+ * @author Dustin Ray
+ * @version Summer 2021
  */
-
-
 public class RegEx {
 
+    /**List of results of tests on input.  */
     private final ArrayList<Boolean> myResultList;
 
-
-
+    /** Constructor for class. */
     public RegEx() {
         Scanner theInput = new Scanner(System.in);
         myResultList = new ArrayList<>();
@@ -55,7 +58,6 @@ public class RegEx {
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void socialSecurityNumber(final String theInputString) {
-
         System.out.println(theInputString);
         String regex = "^(?!666|000|9\\d{2})\\d{3}[-\s]?(?!00)\\d{2}[-\s]?(?!0{4})\\d{4}$";
         checkPattern(theInputString, regex);
@@ -75,22 +77,18 @@ public class RegEx {
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void usPhoneNumber(final String theInputString) {
-
-
         String regex = "^[(]?[2-9]\\d{2}[)]?[-\s]?\\d{3}[-\s]?\\d{4}$";
         checkPattern(theInputString, regex);
     }
 
-
     /**
      * Uses RegEx to validate theInputString as a valid E-mail address.
+     * https://regexlib.com/REDetails.aspx?regexp_id=1855
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void emailAddress(final String theInputString) {
-
-        String regex = "";
+        String regex = "^([a-zA-Z0-9]+(?:[.-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:[.-]?[a-zA-Z0-9]+)*\\.[a-zA-Z]{2,7})$";
         checkPattern(theInputString, regex);
-
     }
 
 
@@ -100,10 +98,8 @@ public class RegEx {
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void lastNameFirstNameMiddleInitial(final String theInputString) {
-
-        String regex = "";
+        String regex = "^[a-zA-Z]+(([',.\\-]*[a-zA-Z, ])?[a-zA-Z]*)*$";
         checkPattern(theInputString, regex);
-
     }
 
 
@@ -112,10 +108,8 @@ public class RegEx {
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void mmDDYYY(final String theInputString) {
-
-        String regex = "";
+        String regex = "()-()-()";
         checkPattern(theInputString, regex);
-
     }
 
 
