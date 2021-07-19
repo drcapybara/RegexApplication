@@ -27,42 +27,56 @@
  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */ 
-
+ */
+package RegexApplication.src;
 import java.io.Console;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.Scanner;
+import java.util.regex.*;
 
 public class RegexTestHarness {
 
     public static void main(String[] args){
-
-        /**
-         * Date expression validator with format YYMMDD Validates leap years. Of course, as year has only 2 digits,
-         * it's not possible to invalidate years like 2100, 2200, 2300, etc as a non-leap years !
-         */
         String testRegex = "^((\\d{2}((0[13578]|1[02])(0[1-9]|[12]\\d|3[01])|(0[13456789]|1[012])(0[1-9]|[12]\\d|30)|02(0[1-9]|1\\d|2[0-8])))|([02468][048]|[13579][26])0229)$";
+        /**
+         * Uses RegEx to validate theInputString as a password that contains at least
+         *  *              10 characters
+         *  *              and includes at least:
+         *  *              one upper case character,
+         *  *              lower case character,
+         *  *              digit,
+         *  *              punctuation mark,
+         *  *              and does not have more than 3 consecutive lower case characters
+         * @param theInputString The string to validate against RegEx defined above.
+         */
 
-        String regex = "^((1[0-2]?)-([1-31])-([0-9][0-9][0-9][0-9])|((02)?-(29)-([0-9][0-9][02468][048]|[0-9][0-9][13579]))$)";
+
+
+        String regexStage1 = "^(?=.{10,}$)(?=\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^{}&*().,<>;])(?:([\\w\\d*?!:;])\\1?(?!\\1))+$";
+
+
         ArrayList<String> testList = new ArrayList<>();
 
-        testList.add("1-1-2021");
-        testList.add("Smith, John");
-        testList.add("2-29-2021");
-        testList.add("2-29-2024");
-        testList.add("Smith John");
-
+        testList.add("8as4tAa1!");
+        testList.add("48as4tAa1!");
+        testList.add("48as4tAaa1!");
+        testList.add("48as4tAaaa1!");
+        testList.add("48as4tA1!!!");
+        testList.add("48as4tAa1!48as4tAa1!");
+        testList.add("48as4tAaaa1!");
+        testList.add("48as4tAa1");
+        testList.add("48as4tAa1[");
+        testList.add("AAAAA");
+        testList.add("AAAAa");
+        testList.add("1");
+        testList.add("12345");
 
         for (String s : testList) {
-
             Pattern pattern =
-                    Pattern.compile(regex);
-
+                    Pattern.compile(regexStage1);
             Matcher matcher =
                     pattern.matcher(s);
-
             boolean found = false;
             while (matcher.find()) {
                 System.out.printf("I found the text" +

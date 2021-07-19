@@ -1,3 +1,6 @@
+package RegexApplication.src;
+
+
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -58,7 +61,6 @@ public class RegEx {
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void socialSecurityNumber(final String theInputString) {
-        System.out.println(theInputString);
         String regex = "^(?!666|000|9\\d{2})\\d{3}[-\s]?(?!00)\\d{2}[-\s]?(?!0{4})\\d{4}$";
         checkPattern(theInputString, regex);
     }
@@ -72,6 +74,7 @@ public class RegEx {
      *              (234)555-5555
      *              (234)-555-5555
      *              234-555-5555
+     *              2345555555
      * List of valid area codes obtained from:
      * https://textlists.info/geography/list-of-u-s-area-codes-and-states/
      * @param theInputString The string to validate against RegEx defined above.
@@ -107,8 +110,8 @@ public class RegEx {
      * Uses RegEx to validate theInputString as a Date in MM-DD-YYYY format.
      * @param theInputString The string to validate against RegEx defined above.
      */
-    private void mmDDYYY(final String theInputString) {
-        String regex = "()-()-()";
+    private void mmDDYYYY(final String theInputString) {
+        String regex = "^((1[0-2]?)-([1-31])-([0-9][0-9][0-9][0-9])|((02)?-(29)-([0-9][0-9][02468][048]|[0-9][0-9][13579]))$)";
         checkPattern(theInputString, regex);
     }
 
@@ -122,7 +125,7 @@ public class RegEx {
      */
     private void houseAddress(final String theInputString) {
 
-        String regex = "";
+        String regex = "^(\\d{3,})\\s?(\\w{0,5})\\s([a-zA-Z]{2,30})\\s([a-zA-Z]{2,15})\\.?\\s?(\\w{0,5})$";
         checkPattern(theInputString, regex);
 
     }
@@ -137,7 +140,7 @@ public class RegEx {
      */
     private void cityStateZip(final String theInputString) {
 
-        String regex = "";
+        String regex = "^(([\\w[\\s]?]+,) (A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY]) (\\d{5}(-\\d{4})?))$";
         checkPattern(theInputString, regex);
 
     }
@@ -145,11 +148,12 @@ public class RegEx {
 
     /**
      * Uses RegEx to validate theInputString as Military time, including seconds.
+     * Accepted as HH:MM:SS, invalid otherwise.
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void militaryTimeWithSeconds(final String theInputString) {
 
-        String regex = "";
+        String regex = "^((([0]?[1-9])(:|\\.)[0-5][0-9]((:|\\.)[0-5][0-9])?)|(([0]?[0-9]|1[0-9]|2[0-3])(:|\\.)[0-5][0-9]((:|\\.)[0-5][0-9])))$";
         checkPattern(theInputString, regex);
 
     }
@@ -158,11 +162,15 @@ public class RegEx {
 
     /**
      * Uses RegEx to validate theInputString as US Currency down to the penny (ex: $123,456,789.23).
+     * Required to have $ at start of string, pennies can be validated but are optional.
+     * $123,456,789 is valid
+     * 123,456,789.23 is invalid
+     *
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void usCurrencyToPenny(final String theInputString) {
 
-        String regex = "";
+        String regex = "^\\$([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$";
         checkPattern(theInputString, regex);
 
     }
@@ -170,11 +178,12 @@ public class RegEx {
 
     /**
      * Uses RegEx to validate theInputString as URL, including http:// (upper and lower case should be accepted).
+     * https://regexlib.com/UserPatterns.aspx?authorId=0efd0ef1-6d4c-4835-89b2-336941ca3c67
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void urlWithHttp(final String theInputString) {
 
-        String regex = "";
+        String regex = "^((((H|h)(T|t)|(F|f))(T|t)(P|p)((S|s)?))\\://)?(www.|[a-zA-Z0-9].)[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,6}(\\:[0-9]{1,5})*(/($|[a-zA-Z0-9\\.\\,\\;\\?\\'\\+&amp;%\\$#\\=~_\\-]+))*$";
         checkPattern(theInputString, regex);
 
     }
@@ -182,18 +191,20 @@ public class RegEx {
 
     /**
      * Uses RegEx to validate theInputString as a password that contains at least
-     *  *              10 characters
-     *  *              and includes at least:
-     *  *              one upper case character,
-     *  *              lower case character,
-     *  *              digit,
-     *  *              punctuation mark,
-     *  *              and does not have more than 3 consecutive lower case characters
+     *                10 characters
+     *                and includes at least:
+     *                one upper case character,
+     *                lower case character,
+     *                digit,
+     *                punctuation mark,
+     *                and does not have more than 3 consecutive lower case characters
+     *                todo fails for 3 consecutive characters of any type
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void password(final String theInputString) {
 
-        String regex = "";
+                        //check length      1+ lc       1+uc        1+ sc                  no more than 3 in a row
+        String regex = "^(?=.{10,}$)(?=\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^{}&*().,<>;])(?:([\\w\\d*?!:;])\\1?(?!\\1))+$";
         checkPattern(theInputString, regex);
 
     }
@@ -206,13 +217,9 @@ public class RegEx {
      * @param theInputString The string to validate against RegEx defined above.
      */
     private void oddCharactersEndingIon(final String theInputString) {
-
-        String regex = "";
+        String regex = "^(..)*(ion)$";
         checkPattern(theInputString, regex);
-
     }
-
-
 
 
     private void checkPattern(final String theInputString, final String theRegex){
@@ -235,7 +242,7 @@ public class RegEx {
             case "B" -> usPhoneNumber(theNextLine);
             case "C" -> emailAddress(theNextLine);
             case "D" -> lastNameFirstNameMiddleInitial(theNextLine);
-            case "E" -> mmDDYYY(theNextLine);
+            case "E" -> mmDDYYYY(theNextLine);
             case "F" -> houseAddress(theNextLine);
             case "G" -> cityStateZip(theNextLine);
             case "H" -> militaryTimeWithSeconds(theNextLine);
