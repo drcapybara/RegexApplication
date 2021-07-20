@@ -1,7 +1,6 @@
 package RegexApplication.src;
 
-
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,39 +32,32 @@ import java.util.regex.Pattern;
  * @author Dustin Ray
  * @version Summer 2021
  */
-public class RegEx {
-
-    /**List of results of tests on input.  */
-    private final ArrayList<Boolean> myResultList;
+public class RegEx extends Testable {
 
     /** Constructor for class. */
-    public RegEx() {
+    public RegEx() throws FileNotFoundException {
         Scanner theInput = new Scanner(System.in);
-        myResultList = new ArrayList<>();
         System.out.println("Please select an option: ");
         String option = theInput.nextLine();
         while(!option.equals("Q")) {
             System.out.println("in loop, enter text to test;");
             getMethodCall(option, theInput.nextLine());
             option = theInput.nextLine();
-            System.out.println("Exiting");
-        }
 
+        }System.out.println("Exiting");
     }
-
 
     /**
      * Uses RegEx to validate theInputString as a Social Security Number.
      * https://www.ssa.gov/history/ssn/geocard.html#:~:text=Number%20Has%20Three%20Parts,digits%20is%20the%20Serial%20Number
      * https://www.geeksforgeeks.org/how-to-validate-ssn-social-security-number-using-regular-expression/
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void socialSecurityNumber(final String theInputString) {
+    private boolean socialSecurityNumber(final String theInputString) {
         String regex = "^(?!666|000|9\\d{2})\\d{3}[-\s]?(?!00)\\d{2}[-\s]?(?!0{4})\\d{4}$";
-        checkPattern(theInputString, regex);
+        return checkPattern(theInputString, regex);
     }
-
-
 
     /**
      * Uses RegEx to validate theInputString as a  10 digit US Phone number.
@@ -78,41 +70,58 @@ public class RegEx {
      * List of valid area codes obtained from:
      * https://textlists.info/geography/list-of-u-s-area-codes-and-states/
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void usPhoneNumber(final String theInputString) {
+    private boolean usPhoneNumber(final String theInputString) throws FileNotFoundException {
         String regex = "^[(]?[2-9]\\d{2}[)]?[-\s]?\\d{3}[-\s]?\\d{4}$";
-        checkPattern(theInputString, regex);
+        return checkPattern(theInputString, regex) && checkValidAreaCode(theInputString);
     }
 
     /**
      * Uses RegEx to validate theInputString as a valid E-mail address.
      * https://regexlib.com/REDetails.aspx?regexp_id=1855
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void emailAddress(final String theInputString) {
+    private boolean emailAddress(final String theInputString) {
         String regex = "^([a-zA-Z0-9]+(?:[.-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:[.-]?[a-zA-Z0-9]+)*\\.[a-zA-Z]{2,7})$";
-        checkPattern(theInputString, regex);
+        return checkPattern(theInputString, regex);
     }
 
 
     /**
      * Uses RegEx to validate theInputString as a Name on a class roster,
      * assuming one or more middle initials - Last name, First name, MI
+     * valid: Last, First R M S
+     *        Last, First R
+     *        Last, First R.
+     *        Last, First R. M. S.
+     * Accepts hyphenated last names.
+     * invalid: Last, First RMS and otherwise
+     * support for international characters is included.
+     *
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void lastNameFirstNameMiddleInitial(final String theInputString) {
-        String regex = "^[a-zA-Z]+(([',.\\-]*[a-zA-Z, ])?[a-zA-Z]*)*$";
-        checkPattern(theInputString, regex);
+    private boolean lastNameFirstNameMiddleInitial(final String theInputString) {
+        String regex = "^([a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð,'-]*,) ([a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð']?)+((([\\s][A-Za-zàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð])[.])*|([\\s][A-Za-zàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð])*)$";
+
+        return checkPattern(theInputString, regex);
     }
 
 
     /**
      * Uses RegEx to validate theInputString as a Date in MM-DD-YYYY format.
+     * Valid : MM-DD-YYYY
+     * Invalid: MMDDYYYY and otherwise. Uses helper to check for leap year
+     * and valid days in months.
+     *
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void mmDDYYYY(final String theInputString) {
-        String regex = "^((1[0-2]?)-([1-31])-([0-9][0-9][0-9][0-9])|((02)?-(29)-([0-9][0-9][02468][048]|[0-9][0-9][13579]))$)";
-        checkPattern(theInputString, regex);
+    private boolean mmDDYYYY(final String theInputString) {
+        String regex = "(0\\d{1}|1[0-2])-([0-2]\\d{1}|3[0-1])-([0-9]){2}\\d{2}";
+        return (checkPattern(theInputString, regex) && checkValidDate(theInputString));
     }
 
 
@@ -121,13 +130,13 @@ public class RegEx {
      *                                      Street number,
      *                                      street name,
      *                                      abbreviation for road, street, boulevard or avenue
+     * I wanted to make this one more precise but I ran out of time.
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void houseAddress(final String theInputString) {
-
+    private boolean houseAddress(final String theInputString) {
         String regex = "^(\\d{3,})\\s?(\\w{0,5})\\s([a-zA-Z]{2,30})\\s([a-zA-Z]{2,15})\\.?\\s?(\\w{0,5})$";
-        checkPattern(theInputString, regex);
-
+        return checkPattern(theInputString, regex);
     }
 
 
@@ -137,12 +146,11 @@ public class RegEx {
      *                                  state followed by
      *                                  zip as it should appear on a letter
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void cityStateZip(final String theInputString) {
-
+    private boolean cityStateZip(final String theInputString) {
         String regex = "^(([\\w[\\s]?]+,) (A[KLRZ]|C[AOT]|D[CE]|FL|GA|HI|I[ADLN]|K[SY]|LA|M[ADEINOST]|N[CDEHJMVY]|O[HKR]|P[AR]|RI|S[CD]|T[NX]|UT|V[AIT]|W[AIVY]) (\\d{5}(-\\d{4})?))$";
-        checkPattern(theInputString, regex);
-
+        return checkPattern(theInputString, regex);
     }
 
 
@@ -150,15 +158,12 @@ public class RegEx {
      * Uses RegEx to validate theInputString as Military time, including seconds.
      * Accepted as HH:MM:SS, invalid otherwise.
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void militaryTimeWithSeconds(final String theInputString) {
-
+    private boolean militaryTimeWithSeconds(final String theInputString) {
         String regex = "^((([0]?[1-9])(:|\\.)[0-5][0-9]((:|\\.)[0-5][0-9])?)|(([0]?[0-9]|1[0-9]|2[0-3])(:|\\.)[0-5][0-9]((:|\\.)[0-5][0-9])))$";
-        checkPattern(theInputString, regex);
-
+        return checkPattern(theInputString, regex);
     }
-
-
 
     /**
      * Uses RegEx to validate theInputString as US Currency down to the penny (ex: $123,456,789.23).
@@ -167,27 +172,23 @@ public class RegEx {
      * 123,456,789.23 is invalid
      *
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void usCurrencyToPenny(final String theInputString) {
-
+    private boolean usCurrencyToPenny(final String theInputString) {
         String regex = "^\\$([0-9]{1,3},([0-9]{3},)*[0-9]{3}|[0-9]+)(.[0-9][0-9])?$";
-        checkPattern(theInputString, regex);
-
+        return checkPattern(theInputString, regex);
     }
-
 
     /**
      * Uses RegEx to validate theInputString as URL, including http:// (upper and lower case should be accepted).
      * https://regexlib.com/UserPatterns.aspx?authorId=0efd0ef1-6d4c-4835-89b2-336941ca3c67
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void urlWithHttp(final String theInputString) {
-
+    private boolean urlWithHttp(final String theInputString) {
         String regex = "^((((H|h)(T|t)|(F|f))(T|t)(P|p)((S|s)?))\\://)?(www.|[a-zA-Z0-9].)[a-zA-Z0-9\\-\\.]+\\.[a-zA-Z]{2,6}(\\:[0-9]{1,5})*(/($|[a-zA-Z0-9\\.\\,\\;\\?\\'\\+&amp;%\\$#\\=~_\\-]+))*$";
-        checkPattern(theInputString, regex);
-
+        return checkPattern(theInputString, regex);
     }
-
 
     /**
      * Uses RegEx to validate theInputString as a password that contains at least
@@ -198,15 +199,13 @@ public class RegEx {
      *                digit,
      *                punctuation mark,
      *                and does not have more than 3 consecutive lower case characters
-     *                todo fails for 3 consecutive characters of any type
+     *
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void password(final String theInputString) {
-
-                        //check length      1+ lc       1+uc        1+ sc                  no more than 3 in a row
-        String regex = "^(?=.{10,}$)(?=\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^{}&*().,<>;])(?:([\\w\\d*?!:;])\\1?(?!\\1))+$";
-        checkPattern(theInputString, regex);
-
+    private boolean password(final String theInputString) {
+        String regex = "^(?=.{10,}$)(?=\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*([a-z])\\1{2}).*$";
+        return checkPattern(theInputString, regex);
     }
 
 
@@ -215,28 +214,34 @@ public class RegEx {
      * containing an odd number of alphabetic characters,
      * ending in "ion".
      * @param theInputString The string to validate against RegEx defined above.
+     * @return result of regex pattern match
      */
-    private void oddCharactersEndingIon(final String theInputString) {
+    private boolean oddCharactersEndingIon(final String theInputString) {
         String regex = "^(..)*(ion)$";
-        checkPattern(theInputString, regex);
+        return checkPattern(theInputString, regex);
     }
 
 
-    private void checkPattern(final String theInputString, final String theRegex){
-        boolean result = false;
+    /**
+     * RegEx pattern checker.
+     * @param theInputString is the string to match.
+     * @param theRegex is the regex to match against.
+     */
+    private boolean checkPattern(final String theInputString, final String theRegex){
         Pattern pattern = Pattern.compile(theRegex);
         Matcher matcher = pattern.matcher(theInputString);
         boolean matches = matcher.matches();
-        System.out.println("Matches test: " + matches);
-        myResultList.add(matches);
+        System.out.println("Matches RegEx test: " + matches);
+
+        return matches;
     }
 
     /**
      * Chooses the appropriate method to call based on user input.
      * @param theOption A String representing the method to select.
-     * @param theNextLine The String to be used for RegEx validation. 
+     * @param theNextLine The String to be used for RegEx validation.
      */
-    private void getMethodCall(final String theOption, final String theNextLine) {
+    private void getMethodCall(final String theOption, final String theNextLine) throws FileNotFoundException {
         switch (theOption) {
             case "A" -> socialSecurityNumber(theNextLine);
             case "B" -> usPhoneNumber(theNextLine);
@@ -250,13 +255,6 @@ public class RegEx {
             case "J" -> urlWithHttp(theNextLine);
             case "K" -> password(theNextLine);
             case "L" -> oddCharactersEndingIon(theNextLine);
-
         }
     }
-
-    @Override
-    public String toString() {
-        return myResultList.toString();
-    }
-
 }
