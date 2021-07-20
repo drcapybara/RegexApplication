@@ -37,14 +37,16 @@ public class RegEx extends Testable {
     /** Constructor for class. */
     public RegEx() throws FileNotFoundException {
         Scanner theInput = new Scanner(System.in);
+
         System.out.println("Please select an option: ");
         String option = theInput.nextLine();
-        while(!option.equals("Q")) {
-            System.out.println("in loop, enter text to test;");
+        while (!option.equals("Q")) {
+            System.out.println("Enter text to test;");
             getMethodCall(option, theInput.nextLine());
+            System.out.println("Please select an option: ");
             option = theInput.nextLine();
 
-        }System.out.println("Exiting");
+        }
     }
 
     /**
